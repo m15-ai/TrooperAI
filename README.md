@@ -28,6 +28,23 @@ Check it out in action.
 - Realistic Trooper voice using stock Piper voice
 - Client triggered via gesture or button press
 
+## Performance
+
+Packing a low-latency voice system onto a raspberry pi device was a challenge. The Pi5 made this project possible. I opted not to include the AI kit or SSD, so the system runs on a base Pi5 8Gb with 32Gb MicroSD card.
+
+- STT ~10ms
+- LLM ~3–15 sec depending on prompt
+- TTS ~2–5 sec per response
+- All speech streamed sentence-by-sentence for responsiveness
+
+#### CPU Usage
+
+Blah
+
+<insert inage>
+
+More
+
 ## Core Architecture
 
 The primary goal of the project to was to create a local voice solution, small enough to install in a life-size storm trooper, with acceptable latency to allow for a natural conversation with the Trooper.
@@ -385,66 +402,11 @@ Use `systemctl list-unit-files | grep trooper` to confirm they are enabled.
 
 ------
 
-## Performance
-
-- STT ~10ms
-- LLM ~3–15 sec depending on prompt
-- TTS ~2–5 sec per response
-- All speech streamed sentence-by-sentence for responsiveness
-
-#### CPU Usage
-
-Blah
-
-<insert inage>
-
-More
-
-------
-
-## Requirements
-
-Requirements.txt
-
-```
-# Python dependencies for Trooper project
-
-vosk>=0.3.45
-PyAudio>=0.2.14
-requests>=2.32.3
-
-# System / CLI dependencies (install via your OS package manager)
-# - sox       (for audio mixing and filters)
-# - ffmpeg    (for recording/encoding audio)
-# - piper     (for TTS voice model)
-# - pulseaudio-utils or pipewire-pulse (for capturing system audio via PulseAudio)
-# - ollama    (Ollama CLI for local LLM inference)
-```
-
-blah
-
-- Python 3.11+
-- PyAudio
-- Vosk
-- Piper
-- SoX
-- websockets
-- numpy
-
-blah
-
-## Future Improvements
+## Notes
 
 - Whisper streaming for STT
 - Full-duplex interrupt handling
-- Dynamic context summarization
-- Web dashboard or status indicator
-- USB mic reconnect support / device hotplug
 
 ## License
 
-blah
-
-## Get Involved
-
-This is a live, evolving system. Feature contributions and performance ideas are welcome!
+MIT 2.0
