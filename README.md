@@ -246,7 +246,7 @@ Trooper uses a bidirectional WebSocket connection between the **client** (audio 
 #### Message Flow Overview
 
 ```
-textCopyEdit[ Mic Audio ] ──► client.py ── send ─► server.py ──► STT ─► LLM ─► TTS ──► client.py ──► [ Audio Output ]
+[ Mic Audio ] ──► client.py ── send ─► server.py ──► STT ─► LLM ─► TTS ──► client.py ──► [ Audio Output ]
 ```
 
 #### Message Loop
