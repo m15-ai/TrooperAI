@@ -16,6 +16,7 @@ Check it out in action.
 
 - Fully integrated into headless Raspberry Pi5
 - Full-duplex mic/speaker support
+- WebSocket client/server architecture
 - LED mode feedback (listening / speaking / thinking)
 - Sentence streaming STT using lightweight Vosk model
 - Sentence-by-sentence streaming TTS using Piper
@@ -51,7 +52,7 @@ The primary goal of the project to was to create a local voice solution, small e
 
 #### Speech Input
 
-The system captures audio through a Playstation PS-Eye mic arrary connected to the Raspberry Pi5 via USB-A port. The PS-Eye has a 4 mic array that is sensitive enough to allow users at a distance to be able to speak to the Trooper.
+The system captures audio through a Playstation PS-Eye mic array connected to the Raspberry Pi5 via USB-A port. The PS-Eye has a 4 mic array that is sensitive enough to allow users at a distance to be able to speak to the Trooper.
 
 Audio-in highlights:
 
@@ -146,7 +147,7 @@ Trooper/
 
 ------
 
-### Python Dependencies
+#### Python Dependencies
 
 Install all required Python packages via:
 
@@ -177,11 +178,11 @@ mediapipe==0.10.9
 
 ------
 
-### System Dependencies
+#### System Dependencies
 
 These are **not** installed via pip and must be installed via your OS package manager or manually.
 
-#### APT Install (Debian / Ubuntu)
+##### APT Install (Debian / Ubuntu)
 
 ```bash
 sudo apt update && sudo apt install -y \
@@ -193,7 +194,7 @@ sudo apt update && sudo apt install -y \
     portaudio19-dev
 ```
 
-#### Piper (Text-to-Speech Engine)
+##### Piper (Text-to-Speech Engine)
 
 Used for fast local speech synthesis.
 
@@ -207,7 +208,7 @@ cargo install piper
 
 > Place the binary at `~/.local/bin/piper` or update the path in `server.py`.
 
-#### Ollama (LLM Backend)
+##### Ollama (LLM Backend)
 
 Ollama runs your local language models like `gemma` or `llama3`.
 
@@ -222,7 +223,7 @@ ollama serve &
 ollama pull gemma:2b
 ```
 
-#### Audio System
+##### Audio System
 
 Ensure `PulseAudio` is running:
 
@@ -237,6 +238,55 @@ sudo usermod -aG audio $USER
 ```
 
 Then log out or reboot.
+
+## WebSocket Architecture
+
+Trooper uses a bidirectional WebSocket connection between the **client** (audio I/O and playback on device) and the **server** (speech recognition, LLM inference, and TTS).
+
+#### Message Flow Overview
+
+```
+textCopyEdit[ Mic Audio ] ──► client.py ── send ─► server.py ──► STT ─► LLM ─► TTS ──► client.py ──► [ Audio Output ]
+```
+
+#### Message Loop
+
+##### 1. **Client → Server**
+
+- The microphone stream is continuously captured.
+- It is resampled (if needed) and sent as **binary audio chunks** via WebSocket.
+- These chunks are 16kHz mono PCM in `int16` format.
+
+##### 2. **Server**
+
+- Uses `Vosk` for real-time speech recognition.
+- Once a full utterance is detected:
+  - The transcript is sent to the LLM (via Ollama).
+  - The response is synthesized using `Piper`.
+  - Audio is optionally processed with SoX for retro voice effects.
+
+##### 3. **Server → Client**
+
+- The TTS audio is streamed back in small binary chunks.
+- When playback is complete, the server sends the string message `"__END__"`.
+
+##### 4. **Client Playback**
+
+- On receiving audio, the client:
+  - Optionally mutes the mic to prevent feedback.
+  - Plays the audio stream in real time.
+  - Sends `"__done__"` to the server to indicate playback is finished.
+
+------
+
+#### Message Types
+
+| Direction       | Type         | Description                                       |
+| --------------- | ------------ | ------------------------------------------------- |
+| Client → Server | `bytes`      | 16-bit PCM audio input                            |
+| Server → Client | `bytes`      | 16-bit PCM TTS output                             |
+| Server → Client | `"__END__"`  | Signals end of TTS segment                        |
+| Client → Server | `"__done__"` | Signals playback complete (used for LED feedback) |
 
 ## Configuration
 
