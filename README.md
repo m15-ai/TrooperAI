@@ -1,48 +1,55 @@
-# TrooperAI: Local Real-Time Voice Assistant
+# TrooperAI: Real Time Voice Assistant for Raspberry Pi5
 
-Trooper is a low-latency, local-first voice assistant implemented in Python. It combines real-time speech recognition, LLM-based dialog, and high-quality TTS into a reactive system running on Raspberry Pi5 (or other Linux systems).
+The TrooperAI project was a test to see if I could build a low-latency, local (non-networked) voice assistant in Python for the Raspberry Pi. The system combines real-time speech recognition, LLM-based dialog, and high-quality TTS into a reactive system running on Raspberry Pi5. There were a number of twists and turns to optimize the system. This repo describes the journey.
 
-<insert photo> 
+The final device looks like this: 
 
-The device ...
+<pic>
 
-<insert video>
+This ultimate plan is to integrate it into a life-size Stormtrooper to bring him to life.
 
 Check it out in action.
+
+<video>
 
 ------
 
 ## Features
 
-- Fully integrated into headless Raspberry Pi5
-- Full-duplex mic/speaker support
-- WebSocket client/server architecture
+- Fully integrated into headless Raspberry Pi5-8Gb
+- WebSocket client/server architecture with full-duplex mic/speaker support
 - LED mode feedback (listening / speaking / thinking)
-- Sentence streaming STT using lightweight Vosk model
-- Sentence-by-sentence streaming TTS using Piper
+- Sentence streaming Speech-to-Text (STT) using lightweight Vosk model.  Support for any Vosk voice. Realistic Trooper voice achieved using stock Piper voice. Support for add-on voice effects.
+- Sentence-by-sentence streaming Text-to-Speech (TTS) using Piper
+- LLM inference is achieved locally using Ollama. Tested with two lightweight models: `gemma2:0.5b` and `qwen2.5:0.6b`
 - Mic-mute mode for setup with a speaker and separate mic
-- Interruptible architecture (when mic mute is disabled)
-- Configurable device names (mic and speaker)
 - JSON-based configuration: `.trooper_config.json`
+- Configurable device names (mic and speaker)
 - Graceful handling of missing audio devices
 - Arcade style lighted button for visual feedback and control
-- Realistic Trooper voice using stock Piper voice
-- Client triggered via gesture or button press
+- Detection and elimination of false low-energy utterances
+- System can be triggered via gesture detection (Pipe Line Model) or button press
 
 ## Performance
 
-Packing a low-latency voice system onto a raspberry pi device was a challenge. The Pi5 made this project possible. I opted not to include the AI kit or SSD, so the system runs on a base Pi5 8Gb with 32Gb MicroSD card.
+Packing a low-latency voice system onto a raspberry pi device was a challenge. The Pi5 made this project possible. I opted not to include the AI kit or SSD, so the system runs on a stock Pi5 8Gb RAM and a 32Gb MicroSD card running stock Pi OS.
+
+During Vosk STT, Inference via Ollama, and Piper TTS, the CPU on the Pi5 is completely maxed out at 100%.
+
+The active cooler fan was installed as well as an additional case fan integrated in the Pi52 retro arcade case.
+
+Over a large number of dialog samples, the following average timings were recorded:
 
 - STT ~10ms
 - LLM ~3–15 sec depending on prompt
 - TTS ~2–5 sec per response
-- All speech streamed sentence-by-sentence for responsiveness
+- All speech was streamed sentence-by-sentence for responsiveness
+
+Note that neither the Vosk STT (input) nor Piper TTS (output) were designed for true token by token streaming. 
 
 #### CPU Usage
 
 Blah
-
-<insert inage>
 
 More
 
@@ -83,7 +90,7 @@ Choose your model:
   "model_name": "gemma3:1b",
 ```
 
-The system implements configurable System Prompt to give the Trooper his personality. The default  System Prompt for Trooper is stored in the JSON configuration file:
+The system implements configurable System Prompt to give the Trooper his personality. The default System Prompt for Trooper is stored in the JSON configuration file:
 
 ```
 "system_prompt": "You are a loyal Imperial Stormtrooper. You need to keep order. Your weapon is a gun. Dont ask to help or assist.",
@@ -121,13 +128,13 @@ The system integrates an LED / Switch combination. The LED is used to communicat
 
 The switch is wired into GPIO pins of the Raspberry Pi5.
 
-<insert pic of the wiring diagram>
-
 Microphone PS2 Eye device.
 
 ------
 
 ## Project Structure
+
+Blah
 
 ```
 Trooper/
@@ -141,6 +148,8 @@ Trooper/
 ├── client.log            # Log output for client debug
 ```
 
+Blah
+
 ------
 
 ## Project Requirements
@@ -151,13 +160,13 @@ Trooper/
 
 Install all required Python packages via:
 
-```bash
+```
 pip install -r requirements.txt
 ```
 
 **`requirements.txt`**
 
-```txt
+```
 aiofiles==23.2.1
 aiohttp==3.9.3
 asyncio
@@ -184,7 +193,7 @@ These are **not** installed via pip and must be installed via your OS package ma
 
 ##### APT Install (Debian / Ubuntu)
 
-```bash
+```
 sudo apt update && sudo apt install -y \
     sox \
     pulseaudio \
@@ -198,7 +207,7 @@ sudo apt update && sudo apt install -y \
 
 Used for fast local speech synthesis.
 
-```bash
+```
 # Build from source (requires Rust)
 cargo install piper
 
@@ -212,13 +221,13 @@ cargo install piper
 
 Ollama runs your local language models like `gemma` or `llama3`.
 
-```bash
+```
 curl -fsSL https://ollama.com/install.sh | sh
 ```
 
 Start and load your preferred model:
 
-```bash
+```
 ollama serve &
 ollama pull gemma:2b
 ```
@@ -227,13 +236,13 @@ ollama pull gemma:2b
 
 Ensure `PulseAudio` is running:
 
-```bash
+```
 pulseaudio --start
 ```
 
 Make sure your user is in the audio group:
 
-```bash
+```
 sudo usermod -aG audio $USER
 ```
 
@@ -435,20 +444,15 @@ systemctl status trooper-main
 
 Use `systemctl list-unit-files | grep trooper` to confirm they are enabled.
 
-## Debugging & Logs
-
-- `client.py` logs to `/tmp/client.log` via `subprocess.Popen()`
-- LED output visible by tailing FIFO `/tmp/trooper_led`
-- Use `list_pyaudio_devices()` to confirm audio device names
-
 ------
 
-## Robustness
+## Next Steps
 
 - Audio device check with fallback to default
 - LED state debounce for VAD `listen` mode
 - Sentence filter avoids empty or punctuation-only TTS output
 - Graceful WebSocket disconnect handling
+- Interruptible architecture (when mic mute is disabled)
 
 ------
 
