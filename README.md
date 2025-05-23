@@ -4,13 +4,13 @@ The TrooperAI project was a test to see if I could build a low-latency, local (n
 
 The final device looks like this: 
 
-<pic>
+insert pic
 
 This ultimate plan is to integrate it into a life-size Stormtrooper to bring him to life.
 
 Check it out in action.
 
-<video>
+insert video
 
 ------
 
