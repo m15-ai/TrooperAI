@@ -61,42 +61,41 @@ Audio-in highlights:
 - Optional voice activity detection (VAD) gates LED feedback.
 - Audio is streamed to the server in 16kHz mono PCM format.
 
-#### Speech Recognition (STT)
+#### Vosk Speech Recognition (STT)
 
 - Vosk is used in batch mode.
 - Each utterance is sent to the LLM only after a silence break.
 
-#### LLM
+#### Ollama LLM
 
-The system uses local install of Ollama to provide API for the chosen LLM model. Two models have been tested expensively with the project:
-
-```
-Ollama list:
-
-111
-
-222
-```
-
-Choose your model:
+For inference, the system uses a local Ollama install to provide API for the chosen LLM model. Multiple models supported using Ollama. Two models have been tested expensively with the project, `gemma2:2b` and `qwen2.5:0.5b`.  You can pull models onto the Pi5 as long as you have free RAM to store them. 
 
 ```
-  "model_name": "gemma3:1b",
+$ ollama list
+NAME                   ID              SIZE      MODIFIED     
+qwen2.5:0.5b           a8b0c5157701    397 MB    10 days ago     
+tinyllama:latest       2644915ede35    637 MB    5 weeks ago     
+gemma2:2b              8ccf136fdd52    1.6 GB    6 weeks ago       
+smallthinker:latest    945eb1864589    3.6 GB    4 months ago      
 ```
 
-The system implements configurable System Prompt to give the Trooper his personality. The default System Prompt for Trooper is stored in the JSON configuration file:
+To keep the system responsive, you need to choose a lightweight model, otherwise the token rate out of Ollama will be insufficient to provide a comfortable conversation. The system uses `Ollama` to stream JSON token-by-token responses. Each sentence-ending token triggers real-time TTS.
+
+Choose your model in the JSON configuration file:
+
+```
+  "model_name": "gemma2:2b",
+```
+
+The system also implements configurable System Prompt to give the Trooper his personality. The default System Prompt for Trooper is also stored in the JSON configuration file:
 
 ```
 "system_prompt": "You are a loyal Imperial Stormtrooper. You need to keep order. Your weapon is a gun. Dont ask to help or assist.",
 ```
 
-Blah
+#### Piper Text-to-Speech (TTS)
 
-- Uses `Ollama` to stream JSON token-by-token responses.
-- Each sentence-ending token triggers real-time TTS.
-- Multiple models supported using Ollama
-
-#### Text-to-Speech (TTS)
+The system uses the Piper TTS Ssytem.
 
 - Piper generates 16kHz mono audio.
 - SoX upsamples to 48kHz stereo.
@@ -141,6 +140,26 @@ Trooper/
 ├── requirements.txt      # Dependencies file
 ├── client.log            # Log output for client debug
 ```
+
+Blah
+
+#### Summary of Key Files
+
+Blah
+
+##### File 1
+
+Blah
+
+##### File 2
+
+Blah
+
+##### File 3
+
+Blah
+
+##### File 4
 
 Blah
 
