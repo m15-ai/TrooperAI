@@ -17,18 +17,18 @@ insert video
 ## Features
 
 - Fully integrated into headless Raspberry Pi5-8Gb
+- No reliance on remote API calls or cloud providers
 - WebSocket client/server architecture with full-duplex mic/speaker support
 - LED mode feedback (listening / speaking / thinking)
-- Sentence streaming Speech-to-Text (STT) using lightweight Vosk model.  Support for any Vosk voice. Realistic Trooper voice achieved using stock Piper voice. Support for add-on voice effects.
+- Sentence streaming Speech-to-Text (STT) using lightweight Vosk model.  Support for any Vosk voice. Realistic Trooper voice achieved using stock Piper voice `en_US-danny-low.onnx`. Additional support for add-on voice effects.
 - Sentence-by-sentence streaming Text-to-Speech (TTS) using Piper
 - LLM inference is achieved locally using Ollama. Tested with two lightweight models: `gemma2:0.5b` and `qwen2.5:0.6b`
-- Mic-mute mode for setup with a speaker and separate mic
-- JSON-based configuration: `.trooper_config.json`
+- Configurable mic-mute mode for setup with a speaker and separate mic
+- JSON-based configuration file: `.trooper_config.json`
 - Configurable device names (mic and speaker)
-- Graceful handling of missing audio devices
 - Arcade style lighted button for visual feedback and control
 - Detection and elimination of false low-energy utterances
-- System can be triggered via gesture detection (Pipe Line Model) or button press
+- System can be triggered via gesture detection (camera + MediaPipe Hands model) or button press
 
 ## Performance
 
@@ -40,18 +40,12 @@ The active cooler fan was installed as well as an additional case fan integrated
 
 Over a large number of dialog samples, the following average timings were recorded:
 
-- STT ~10ms
+- Vosk STT ~10ms
 - LLM ~3–15 sec depending on prompt
-- TTS ~2–5 sec per response
+- Piper TTS ~2–5 sec per response
 - All speech was streamed sentence-by-sentence for responsiveness
 
-Note that neither the Vosk STT (input) nor Piper TTS (output) were designed for true token by token streaming. 
-
-#### CPU Usage
-
-Blah
-
-More
+Note that neither the Vosk STT (input) nor Piper TTS (output) were designed for true token by token streaming. I had to modify the system to detect sentence breaks via punctuation and silence boundaries to trigger the stream. The allows for long responses from the LLM to be read back without waiting for the entire response, making they system seem much more responsive. The system is able to respond with long elaborate stories, especially using the `gemma2:0.5b` model without issue. 
 
 ## Core Architecture
 
