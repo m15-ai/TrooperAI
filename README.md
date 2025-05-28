@@ -2,15 +2,11 @@
 
 The TrooperAI project was a test to see if I could build a low-latency, local (non-networked) voice assistant in Python for the Raspberry Pi. The system combines real-time speech recognition, LLM-based dialog, and high-quality TTS into a reactive system running on Raspberry Pi5. There were a number of twists and turns to optimize the system. This repo describes the journey.
 
-The final device looks like this: 
+The device is housed in a Game5 Pi retro arcade case. The AdaFruit arcade style LED button was integrated to provide feedback and control. USB ports are used for the camera/mic array (Playstation Eye) and speaker audio out. A USB flash drive is used for headless configuration. 
 
-insert pic
+<img src="/home/m15/Python/Storm Trooper Release/system_pic1.jpg" alt="system_pic1" style="zoom:33%;" />
 
 This ultimate plan is to integrate it into a life-size Stormtrooper to bring him to life.
-
-Check it out in action.
-
-insert video
 
 ------
 
@@ -46,6 +42,16 @@ Over a large number of dialog samples, the following average timings were record
 - All speech was streamed sentence-by-sentence for responsiveness
 
 Note that neither the Vosk STT (input) nor Piper TTS (output) were designed for true token by token streaming. I had to modify the system to detect sentence breaks via punctuation and silence boundaries to trigger the stream. The allows for long responses from the LLM to be read back without waiting for the entire response, making they system seem much more responsive. The system is able to respond with long elaborate stories, especially using the `gemma2:0.5b` model without issue. 
+
+## Python File Overview
+
+| File              | Description                                                  |
+| ----------------- | ------------------------------------------------------------ |
+| `main.py`         | **Main system entrypoint**. Manages session lifecycle (start/stop), LED state, and gesture-based or button-based activation. Handles Piper playback for greetings and timeouts. Pre-warms the LLM model. |
+| `client.py`       | **Audio interface and WebSocket client**. Captures audio from the mic, sends it to the server, and plays back streamed TTS audio. Handles volume control, fade-in/out, and mic muting to prevent feedback. |
+| `server.py`       | **Streaming WebSocket server**. Receives audio, performs real-time speech-to-text (Vosk), queries the LLM via Ollama, and streams TTS responses (Piper). Sends playback audio back in chunks for smooth UX. |
+| `server-batch.py` | **Non-streaming batch-mode server (alternative)**. Similar to `server.py`, but processes entire LLM responses before sending TTS back as a whole. Useful for simpler or legacy setups. |
+| `utils.py`        | **Shared utilities**. Includes configuration loading (USB override), audio device detection, LED control via FIFO pipe, and fade-in/out DSP for playback audio. |
 
 ## Core Architecture
 
@@ -140,26 +146,6 @@ Trooper/
 ├── requirements.txt      # Dependencies file
 ├── client.log            # Log output for client debug
 ```
-
-Blah
-
-#### Summary of Key Files
-
-Blah
-
-##### File 1
-
-Blah
-
-##### File 2
-
-Blah
-
-##### File 3
-
-Blah
-
-##### File 4
 
 Blah
 
@@ -260,6 +246,34 @@ sudo usermod -aG audio $USER
 ```
 
 Then log out or reboot.
+
+## GPIO Connections
+
+The Trooper system uses the Raspberry Pi 5’s GPIO header to connect:
+
+- A **30mm Adafruit arcade-style LED pushbutton**
+- A **case cooling fan**
+- The **official Pi5 active cooler** (connected separately via fan header)
+
+#### GPIO Pinout Table
+
+| Component              | GPIO Pin | Physical Pin | Function                     |
+| ---------------------- | -------- | ------------ | ---------------------------- |
+| **Arcade Button**      | GPIO 17  | Pin 11       | Input (detect button press)  |
+| **Button LED**         | GPIO 18  | Pin 12       | Output (blink status LED)    |
+| **Button Power (+5V)** | —        | Pin 2        | +5V power for LED ring       |
+| **Button Ground**      | —        | Pin 6        | Ground for button + LED      |
+| **Fan Power (+5V)**    | —        | Pin 4        | +5V for external case fan    |
+| **Fan Ground**         | —        | Pin 34       | Ground for external case fan |
+
+#### Notes on Button Logic
+
+- The arcade button uses **internal pull-up resistors**, which is why its switch contact is connected to **+5V**.
+- The logic is **active-low**: pressing the button pulls GPIO 17 **low**, triggering an event.
+- The button is **debounced in software** and configured with `hold_time=0.75` seconds in `main.py`, so it only activates Trooper on a **long press**.
+- Short taps are ignored and logged as `"Ignored short press"`.
+
+> This debounce and long-press detection helps avoid accidental session toggles due to noise or brief contact.
 
 ## WebSocket Architecture
 
@@ -389,7 +403,7 @@ These are included in the `requirements.txt`.
 Gesture detection is optional and controlled via config:
 
 ```
-jsonCopyEdit{
+{
   "vision_wake": true
 }
 ```
