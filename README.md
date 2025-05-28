@@ -4,11 +4,9 @@ The TrooperAI project was a test to see if I could build a low-latency, local (n
 
 The device is housed in a Game5 Pi retro arcade case. The AdaFruit arcade style LED button was integrated to provide feedback and control. USB ports are used for the camera/mic array (Playstation Eye) and speaker audio out. A USB flash drive is used for headless configuration. 
 
-<img src="/home/m15/Python/Storm Trooper Release/system_pic1.jpg" alt="system_pic1" style="zoom:33%;" />
+<img src="docs/system_pic1.jpg" alt="system_pic1" style="zoom:33%;" />
 
 This ultimate plan is to integrate it into a life-size Stormtrooper to bring him to life.
-
-------
 
 ## Features
 
@@ -129,8 +127,6 @@ The switch is wired into GPIO pins of the Raspberry Pi5.
 
 Microphone PS2 Eye device.
 
-------
-
 ## Project Structure
 
 Blah
@@ -149,11 +145,7 @@ Trooper/
 
 Blah
 
-------
-
 ## Project Requirements
-
-------
 
 #### Python Dependencies
 
@@ -183,8 +175,6 @@ mediapipe==0.10.9
 ```
 
 > ⚠️ `pyaudio` may require `portaudio19-dev` to build correctly on some systems.
-
-------
 
 #### System Dependencies
 
@@ -313,8 +303,6 @@ Trooper uses a bidirectional WebSocket connection between the **client** (audio 
   - Plays the audio stream in real time.
   - Sends `"__done__"` to the server to indicate playback is finished.
 
-------
-
 #### Message Types
 
 | Direction       | Type         | Description                                       |
@@ -340,8 +328,6 @@ To support headless operation, configuration updates can be applied via a USB fl
 
 This allows users to easily update the Trooper's persona (e.g. voice, model, prompt) without SSH access.
 
-------
-
 #### Sample Configuration
 
 ```
@@ -358,8 +344,6 @@ This allows users to easily update the Trooper's persona (e.g. voice, model, pro
   "system_prompt": "You are a loyal Imperial Stormtrooper. Keep responses terse and authoritative."
 }
 ```
-
-------
 
 #### Parameter Descriptions
 
@@ -471,8 +455,6 @@ systemctl status trooper-main
 
 Use `systemctl list-unit-files | grep trooper` to confirm they are enabled.
 
-------
-
 ## Next Steps
 
 - Audio device check with fallback to default
@@ -480,8 +462,6 @@ Use `systemctl list-unit-files | grep trooper` to confirm they are enabled.
 - Sentence filter avoids empty or punctuation-only TTS output
 - Graceful WebSocket disconnect handling
 - Interruptible architecture (when mic mute is disabled)
-
-------
 
 ## Notes
 
