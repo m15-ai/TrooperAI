@@ -6,23 +6,22 @@ The device is housed in a Game5 Pi retro arcade case. The AdaFruit arcade style 
 
 <img src="docs/system_pic1.jpg" alt="system_pic1" style="zoom:33%;" />
 
-This ultimate plan is to integrate it into a life-size Stormtrooper to bring him to life.
+This ultimate plan is to integrate TrooperAI into a life-size Stormtrooper to bring him to life.
 
 ## Features
 
 - Fully integrated into headless Raspberry Pi5-8Gb
 - No reliance on remote API calls or cloud providers
 - WebSocket client/server architecture with full-duplex mic/speaker support
-- LED mode feedback (listening / speaking / thinking)
 - Sentence streaming Speech-to-Text (STT) using lightweight Vosk model.  Support for any Vosk voice. Realistic Trooper voice achieved using stock Piper voice `en_US-danny-low.onnx`. Additional support for add-on voice effects.
 - Sentence-by-sentence streaming Text-to-Speech (TTS) using Piper
 - LLM inference is achieved locally using Ollama. Tested with two lightweight models: `gemma2:0.5b` and `qwen2.5:0.6b`
 - Configurable mic-mute mode for setup with a speaker and separate mic
 - JSON-based configuration file: `.trooper_config.json`
 - Configurable device names (mic and speaker)
-- Arcade style lighted button for visual feedback and control
+- Arcade style lighted button for visual feedback and control. The large LED provides feedback (listening / speaking / thinking) and a push button to start or stop sessions as an alternative to gesture detection mode.
 - Detection and elimination of false low-energy utterances
-- System can be triggered via gesture detection (camera + MediaPipe Hands model) or button press
+- System can be triggered via gesture detection (camera + MediaPipe Hands model)
 
 ## Performance
 
@@ -39,7 +38,11 @@ Over a large number of dialog samples, the following average timings were record
 - Piper TTS ~2–5 sec per response
 - All speech was streamed sentence-by-sentence for responsiveness
 
-Note that neither the Vosk STT (input) nor Piper TTS (output) were designed for true token by token streaming. I had to modify the system to detect sentence breaks via punctuation and silence boundaries to trigger the stream. The allows for long responses from the LLM to be read back without waiting for the entire response, making they system seem much more responsive. The system is able to respond with long elaborate stories, especially using the `gemma2:0.5b` model without issue. 
+Note that neither the Vosk STT (input) nor Piper TTS (output) were designed for true token by token streaming. I had to modify the system to detect sentence breaks via punctuation and silence boundaries to trigger the stream. The allows for long responses from the LLM to be read back without waiting for the entire response, making they system seem much more responsive. The system is able to respond with long elaborate stories, especially using the `gemma2:0.5b` model without issue.
+
+> Conclusion:
+>
+> Blah
 
 ## Python File Overview
 
@@ -112,29 +115,27 @@ Audio is implemented using a low-cost USB speaker.
 
 - Audio is played in a background thread using `PyAudio`.
 - ~50ms of silence is prepended to each sentence to avoid clipping.
-- Optional fade-in/fade-out applied (see config).
 - A playback queue ensures smooth streaming.
-- Fade-in and Fade-out effects are applied to each complete Trooper voice output to minimize defects.
+- Fade-in and Fade-out effects are applied to voice outputs for smoother audio.
 
 #### LED/Switch/Camera Integration
 
-The system integrates an LED / Switch combination. The LED is used to communicate status of the system. The part is the AdaFruit 30mm illuminated arcade style button. The build in switch can be used to start/stop a session with the Trooper.
+The system integrates an LED / Switch combination. The LED is used to communicate status of the system. The AdaFruit 30mm illuminated arcade style button can be used to start/stop a session with the Trooper.
 
 - LED modes reflect states: `listen`, `blink`, `speak`, `solid`.
 - Controlled via FIFO pipe (`/tmp/trooper_led`) and interpreted by `main.py`.
 
 The switch is wired into GPIO pins of the Raspberry Pi5.
 
-Microphone PS2 Eye device.
+The Playstation Eye USB camera / microphone is used for camera and audio input. The device provides a sensitive 4-array microphone. The camera is used for gesture detection to initiate sessions automatically.
 
 ## Project Structure
-
-Blah
 
 ```
 Trooper/
 ├── client.py             # Audio I/O, mic, speaker, LED
-├── server.py             # LLM, STT, TTS processing
+├── server.py             # Streaming server: LLM, STT, TTS processing
+├── server-batch.py       # Batch mode server, lower latency, but doesnt handle long streams
 ├── main.py               # Launches client on gesture/button
 ├── utils.py              # Shared helpers (e.g. led_request)
 ├── voices/               # Piper voice models
@@ -142,8 +143,6 @@ Trooper/
 ├── requirements.txt      # Dependencies file
 ├── client.log            # Log output for client debug
 ```
-
-Blah
 
 ## Project Requirements
 
@@ -454,19 +453,6 @@ systemctl status trooper-main
 ```
 
 Use `systemctl list-unit-files | grep trooper` to confirm they are enabled.
-
-## Next Steps
-
-- Audio device check with fallback to default
-- LED state debounce for VAD `listen` mode
-- Sentence filter avoids empty or punctuation-only TTS output
-- Graceful WebSocket disconnect handling
-- Interruptible architecture (when mic mute is disabled)
-
-## Notes
-
-- Whisper streaming for STT
-- Full-duplex interrupt handling
 
 ## License
 
