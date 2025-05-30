@@ -472,7 +472,7 @@ Use `systemctl list-unit-files | grep trooper` to confirm they are enabled.
 
 TrooperAI stands on the shoulders of giants. I could not have built this system without the brilliant work shared by these open-source pioneers and educators:
 
-- Vosk – Lightweight, offline-capable speech recognition engine.
+- [Vosk STT](https://alphacephel.com/vosk/) – Lightweight, off-line-capable speech recognition engine.
 - [Piper TTS](https://github.com/rhasspy/piper) – High-quality local text-to-speech engine developed by the Rhasspy team.
 - [faster-whisper](https://github.com/guillaumekln/faster-whisper) – Optimized Whisper inference using CTranslate2.
 - [Whisper Streaming by UFAL](https://github.com/ufal/whisper_streaming) – Real-time whisper implementation.
