@@ -2,15 +2,13 @@
 
 The TrooperAI project was a test to see if I could build a low-latency, local (non-networked) voice assistant in Python for the Raspberry Pi. The system combines real-time speech recognition, LLM-based dialog, and high-quality TTS into a reactive system running on Raspberry Pi5.
 
-The final device is housed in a Game5 Pi retro arcade case. The AdaFruit arcade style LED button was integrated to provide feedback and control. USB ports are used for the camera/mic array (Playstation Eye) and speaker audio out. A USB flash drive is used for headless configuration. 
+The final device is housed in a Game 5 Pi retro arcade case. The AdaFruit arcade style LED button was integrated to provide feedback and control. USB ports are used for the camera/mic array (Playstation Eye) and speaker audio out. A USB flash drive is used for headless configuration. This ultimate plan is to integrate TrooperAI into a life-size Stormtrooper to bring him to life.
 
 <img src="docs/system_pic1.jpg" alt="system_pic1" style="zoom:33%;" />
 
-This ultimate plan is to integrate TrooperAI into a life-size Stormtrooper to bring him to life.
-
 > TLDR Conclusion:
 >
-> The project was a success. Both the streaming and batch architectures (two seperate server.py files) were capable of providing low enough latency to make possible a reasonable conversation with TrooperAI. Gemma2:2b and Qwen2.5:0.5b models provided acceptable performance. The Gemma2 model was able to provide a more direct, authoritarian persona, while Qwen2.5 was faster, but generally provided a more friendly interaction. The programmable System Message is key in tuning your desired personality.
+> The project was a success. Both the streaming and batch architectures (two separate server.py files) were capable of providing low enough latency to make possible a reasonable conversation with TrooperAI. Gemma2:2b and Qwen2.5:0.5b models provided acceptable performance. The Gemma2 model was able to provide a more direct, authoritarian persona, while Qwen2.5 was faster, but generally provided a more friendly interaction. The programmable System Message is key in tuning your desired personality.
 
 ## Features
 
@@ -42,7 +40,7 @@ Over a large number of dialog samples, the following average timings were record
 - Piper TTS ~2–5 sec per response
 - All speech was streamed sentence-by-sentence for responsiveness
 
-Note that neither the Vosk STT (input) nor Piper TTS (output) were designed for true token by token streaming. I had to modify the system to detect sentence breaks via punctuation and silence boundaries to trigger the stream. The allows for long responses from the LLM to be read back without waiting for the entire response, making they system seem much more responsive. The system is able to respond with long elaborate stories, especially using the `gemma2:0.5b` model without issue.
+Note that neither the Vosk STT (input) nor Piper TTS (output) were designed for true token by token streaming. I had to modify the system to detect sentence breaks via punctuation and silence boundaries to trigger the stream. The allows for long responses from the LLM to be read back without waiting for the entire response, making the system seem much more responsive. The system is able to respond with long elaborate stories, especially using the `gemma2:0.5b` model without issue.
 
 ## Python File Overview
 
@@ -102,7 +100,7 @@ The system also implements configurable System Prompt to give the Trooper his pe
 
 #### Piper Text-to-Speech (TTS)
 
-The system uses the Piper TTS Ssytem.
+The system uses the [Piper](https://github.com/rhasspy/piper) Text-to-Speech engine for natural voice synthesis.
 
 - Piper generates 16kHz mono audio.
 - SoX upsamples to 48kHz stereo.
@@ -135,7 +133,7 @@ The Playstation Eye USB camera / microphone is used for camera and audio input. 
 Trooper/
 ├── client.py             # Audio I/O, mic, speaker, LED
 ├── server.py             # Streaming server: LLM, STT, TTS processing
-├── server-batch.py       # Batch mode server, lower latency, but doesnt handle long streams
+├── server-batch.py       # Batch mode server, lower latency, but doesn't handle long streams
 ├── main.py               # Launches client on gesture/button
 ├── utils.py              # Shared helpers (e.g. led_request)
 ├── voices/               # Piper voice models
@@ -235,6 +233,18 @@ sudo usermod -aG audio $USER
 ```
 
 Then log out or reboot.
+
+To test the system, start the `server.py` and `main.py`. I you don't wont the button control, you can start the `client.py` directly instead of starting main.py:
+
+```
+cd Trooper && python3 server.py
+
+cd Trooper && python3 main.py
+
+cd Trooper && python3 client.py
+```
+
+For automatic operation, the client and server can be started via `Systemd` (below)
 
 ## WebSocket Architecture
 
@@ -459,3 +469,5 @@ Use `systemctl list-unit-files | grep trooper` to confirm they are enabled.
 ## License
 
 MIT 2.0
+
+# *May the Force be With You Always*
