@@ -102,7 +102,7 @@ The system also implements configurable System Prompt to give the Trooper his pe
 
 #### Piper Text-to-Speech (TTS)
 
-The system uses the [Piper](https://github.com/rhasspy/piper) Text-to-Speech engine for natural voice synthesis.
+The system uses the Piper Text-to-Speech engine for natural voice synthesis.
 
 - Piper generates 16kHz mono audio.
 - SoX upsamples to 48kHz stereo.
