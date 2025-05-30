@@ -42,6 +42,8 @@ Over a large number of dialog samples, the following average timings were record
 
 Note that neither the Vosk STT (input) nor Piper TTS (output) were designed for true token by token streaming. I had to modify the system to detect sentence breaks via punctuation and silence boundaries to trigger the stream. The allows for long responses from the LLM to be read back without waiting for the entire response, making the system seem much more responsive. The system is able to respond with long elaborate stories, especially using the `gemma2:0.5b` model without issue.
 
+I experimented with Faster-Whisper projects as an alternative to Vosk. In the end, I stayed with Vosk. It was lighter and worked well. I observed the even Whisper STT was not designed for true streaming and while it was responsive on the Pi5, it still would require modifications to keep sentences together. The small Vosk model, while lower performing, was satisfactory for my Trooper application. If you are building a therapist, for example, or application where greater accuracy is required, you may need to pursue Faster-Whisper.
+
 ## Python File Overview
 
 | File              | Description                                                  |
@@ -466,8 +468,22 @@ systemctl status trooper-main
 
 Use `systemctl list-unit-files | grep trooper` to confirm they are enabled.
 
+## References
+
+TrooperAI stands on the shoulders of giants. I could not have built this system without the brilliant work shared by these open-source pioneers and educators:
+
+- Vosk – Lightweight, offline-capable speech recognition engine.
+- [Piper TTS](https://github.com/rhasspy/piper) – High-quality local text-to-speech engine developed by the Rhasspy team.
+- [faster-whisper](https://github.com/guillaumekln/faster-whisper) – Optimized Whisper inference using CTranslate2.
+- [Whisper Streaming by UFAL](https://github.com/ufal/whisper_streaming) – Real-time whisper implementation.
+- YouTube Inspirations:
+  - [“Build a Voice Assistant with Whisper + TTS”](https://www.youtube.com/watch?v=3yLFWpKKbe8)
+  - [“Offline AI Assistant on Pi”](https://www.youtube.com/watch?v=_spinzpEeFM)
+
+> Open source makes this possible. If you're building a similar system, go give these projects a star 🌟 and support them however you can.
+
 ## License
 
 MIT 2.0
 
-# *May the Force be With You Always*
+## *May The Force Be With You Always*
