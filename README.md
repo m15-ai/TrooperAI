@@ -6,9 +6,9 @@ The final device is housed in a Game 5 Pi retro arcade case. The AdaFruit arcade
 
 <img src="docs/system_pic1.jpg" alt="system_pic1" style="zoom:33%;" />
 
-> TLDR Conclusion:
->
-> The project was a success. Both the streaming and batch architectures (two separate server.py files) were capable of providing low enough latency to make possible a reasonable conversation with TrooperAI. Gemma2:2b and Qwen2.5:0.5b models provided acceptable performance. The Gemma2 model was able to provide a more direct, authoritarian persona, while Qwen2.5 was faster, but generally provided a more friendly interaction. The programmable System Message is key in tuning your desired personality.
+## Conclusion
+
+The project was a success. Both the streaming and batch architectures ( `server.py`and `server-batch.py` files) were capable of providing low enough latency to make possible a reasonable conversation with TrooperAI. `Gemma2:2b` and `Qwen2.5:0.5b` models provided acceptable performance. The Gemma2 model was able to provide a more direct, authoritarian persona, while Qwen2.5 was faster, but generally provided a more friendly interaction. The programmable `System Message` is key in tuning your desired personality. I decided on Vosk for STT, although i did extensive testing with faster-whisper. Piper gave excellent performance for TTS.
 
 ## Features
 
