@@ -1,4 +1,4 @@
-# TrooperAI: Real Time Voice Assistant for Raspberry Pi5
+# TrooperAI: Local Conversational AI for Raspberry Pi5
 
 The TrooperAI project was a test to see if I could build a low-latency, local (non-networked) voice assistant in Python for the Raspberry Pi. The system combines real-time speech recognition, LLM-based dialog, and high-quality TTS into a reactive system running on Raspberry Pi5.
 
@@ -97,7 +97,10 @@ Choose your model in the JSON configuration file:
 The system also implements configurable System Prompt to give the Trooper his personality. The default System Prompt for Trooper is also stored in the JSON configuration file:
 
 ```
-"system_prompt": "You are a loyal Imperial Stormtrooper. You need to keep order. Your weapon is a gun. Dont ask to help or assist.",
+"system_prompt":   "You are a loyal Imperial Stormtrooper. 
+					You need to keep order. 
+					Your weapon is a gun. 
+					Dont ask to help or assist.",
 ```
 
 #### Piper Text-to-Speech (TTS)
@@ -236,13 +239,16 @@ sudo usermod -aG audio $USER
 
 Then log out or reboot.
 
-To test the system, start the `server.py` and `main.py`. I you don't wont the button control, you can start the `client.py` directly instead of starting main.py:
+To test the system, start the `server.py` and `main.py`. If you don't wont the button control, you can start `client.py` directly instead of starting `main.py`:
 
 ```
+# Start the server
 cd Trooper && python3 server.py
 
+# Start the main, which controls the initial and closing greetings, the button, and launches the client
 cd Trooper && python3 main.py
 
+# Start the client directly
 cd Trooper && python3 client.py
 ```
 
@@ -326,7 +332,8 @@ This allows users to easily update the Trooper's persona (e.g. voice, model, pro
   "model_name": "llama3:8b",
   "voice": "danny-low.onnx",
   "volume": 90,
-  "system_prompt": "You are a loyal Imperial Stormtrooper. Keep responses terse and authoritative."
+  "system_prompt": "You are a loyal Imperial Stormtrooper. 
+  					Keep responses terse and authoritative."
 }
 ```
 
