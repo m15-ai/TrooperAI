@@ -80,10 +80,8 @@ For inference, the system uses a local Ollama install to provide API for the cho
 ```
 $ ollama list
 NAME                   ID              SIZE      MODIFIED     
-qwen2.5:0.5b           a8b0c5157701    397 MB    10 days ago     
-tinyllama:latest       2644915ede35    637 MB    5 weeks ago     
-gemma2:2b              8ccf136fdd52    1.6 GB    6 weeks ago       
-smallthinker:latest    945eb1864589    3.6 GB    4 months ago      
+qwen2.5:0.5b           a8b0c5157701    397 MB    10 days ago        
+gemma2:2b              8ccf136fdd52    1.6 GB    6 weeks ago          
 ```
 
 To keep the system responsive, you need to choose a lightweight model, otherwise the token rate out of Ollama will be insufficient to provide a comfortable conversation. The system uses `Ollama` to stream JSON token-by-token responses. Each sentence-ending token triggers real-time TTS.
@@ -138,7 +136,7 @@ The Playstation Eye USB camera / microphone is used for camera and audio input. 
 Trooper/
 ├── client.py             # Audio I/O, mic, speaker, LED
 ├── server.py             # Streaming server: LLM, STT, TTS processing
-├── server-batch.py       # Batch mode server, lower latency, but doesn't handle long streams
+├── server-batch.py       # Batch mode server
 ├── main.py               # Launches client on gesture/button
 ├── utils.py              # Shared helpers (e.g. led_request)
 ├── voices/               # Piper voice models
