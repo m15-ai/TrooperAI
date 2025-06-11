@@ -40,7 +40,7 @@ Over a large number of dialog samples, the following average timings were record
 - Piper TTS ~2–5 sec per response
 - All speech was streamed sentence-by-sentence for responsiveness
 
-Note that neither the Vosk STT (input) nor Piper TTS (output) were designed for true token by token streaming. I had to modify the system to detect sentence breaks via punctuation and silence boundaries to trigger the stream. The allows for long responses from the LLM to be read back without waiting for the entire response, making the system seem much more responsive. The system is able to respond with long elaborate stories, especially using the `gemma2:0.5b` model without issue.
+Note that neither the Vosk STT (input) nor Piper TTS (output) were designed for true token by token streaming. I had to modify the system to detect sentence breaks via punctuation and silence boundaries to trigger the stream. The allows for long responses from the LLM to be read back without waiting for the entire response, making the system seem much more responsive. The system is able to respond with long elaborate stories, especially using the `gemma3:1b` model without issue.
 
 I experimented with Faster-Whisper projects as an alternative to Vosk. In the end, I stayed with Vosk. It was lighter and worked well. I observed the even Whisper STT was not designed for true streaming and while it was responsive on the Pi5, it still would require modifications to keep sentences together. The small Vosk model, while lower performing, was satisfactory for my Trooper application. If you are building a therapist, for example, or application where greater accuracy is required, you may need to pursue Faster-Whisper.
 
