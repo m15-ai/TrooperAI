@@ -89,7 +89,7 @@ To keep the system responsive, you need to choose a lightweight model, otherwise
 Choose your model in the JSON configuration file:
 
 ```
-  "model_name": "gemma2:2b",
+  "model_name": "gemma3:1b",
 ```
 
 The system also implements configurable System Prompt to give the Trooper his personality. The default System Prompt for Trooper is also stored in the JSON configuration file:
