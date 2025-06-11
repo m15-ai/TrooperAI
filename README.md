@@ -8,7 +8,7 @@ The final device is housed in a Game 5 Pi retro arcade case. The AdaFruit arcade
 
 ## Conclusion
 
-The project was a success. Both the streaming and batch architectures ( `server.py`and `server-batch.py` files) were capable of providing low enough latency to make possible a reasonable conversation with TrooperAI. `Gemma2:2b` and `Qwen2.5:0.5b` models provided acceptable performance. The Gemma2 model was able to provide a more direct, authoritarian persona, while Qwen2.5 was faster, but generally provided a more friendly interaction. The programmable `System Message` is key in tuning your desired personality. I decided on Vosk for STT, although i did extensive testing with faster-whisper. Piper gave excellent performance for TTS.
+The project was a success. Both the streaming and batch architectures ( `server.py`and `server-batch.py` files) were capable of providing low enough latency to make possible a reasonable conversation with TrooperAI. `Gemma3:1b` and `Qwen2.5:0.5b` models provided acceptable performance. The Gemma2 model was able to provide a more direct, authoritarian persona, while Qwen2.5 was faster, but generally provided a more friendly interaction. The programmable `System Message` is key in tuning your desired personality. I decided on Vosk for STT, although i did extensive testing with faster-whisper. Piper gave excellent performance for TTS.
 
 ## Features
 
@@ -17,7 +17,7 @@ The project was a success. Both the streaming and batch architectures ( `server.
 - WebSocket client/server architecture with full-duplex mic/speaker support
 - Sentence streaming Speech-to-Text (STT) using lightweight Vosk model.  Support for any Vosk voice. Realistic Trooper voice achieved using stock Piper voice `en_US-danny-low.onnx`. Additional support for add-on voice effects.
 - Sentence-by-sentence streaming Text-to-Speech (TTS) using Piper
-- LLM inference is achieved locally using Ollama. Tested with two lightweight models: `gemma2:0.5b` and `qwen2.5:0.6b`
+- LLM inference is achieved locally using Ollama. Tested with two lightweight models: `gemma3:1b` and `qwen2.5:0.5b`
 - Configurable mic-mute mode for setup with a speaker and separate mic
 - JSON-based configuration file: `.trooper_config.json`
 - Configurable device names (mic and speaker)
@@ -81,7 +81,7 @@ For inference, the system uses a local Ollama install to provide API for the cho
 $ ollama list
 NAME                   ID              SIZE      MODIFIED     
 qwen2.5:0.5b           a8b0c5157701    397 MB    10 days ago        
-gemma2:2b              8ccf136fdd52    1.6 GB    6 weeks ago          
+gemma3:1b              8ccf136fdd52    815 MB    6 weeks ago          
 ```
 
 To keep the system responsive, you need to choose a lightweight model, otherwise the token rate out of Ollama will be insufficient to provide a comfortable conversation. The system uses `Ollama` to stream JSON token-by-token responses. Each sentence-ending token triggers real-time TTS.
@@ -97,7 +97,7 @@ The system also implements configurable System Prompt to give the Trooper his pe
 ```
 "system_prompt":   "You are a loyal Imperial Stormtrooper. 
 					You need to keep order. 
-					Your weapon is a gun. 
+					Your weapon is a lightsabre. 
 					Dont ask to help or assist.",
 ```
 
@@ -331,7 +331,9 @@ This allows users to easily update the Trooper's persona (e.g. voice, model, pro
   "voice": "danny-low.onnx",
   "volume": 90,
   "system_prompt": "You are a loyal Imperial Stormtrooper. 
-  					Keep responses terse and authoritative."
+  					Keep responses terse and authoritative.",
+  "session_timeout": 500,
+  "vision_wake": false
 }
 ```
 
