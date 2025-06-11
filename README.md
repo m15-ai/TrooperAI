@@ -327,11 +327,10 @@ This allows users to easily update the Trooper's persona (e.g. voice, model, pro
   "fade_duration_ms": 10,
   "retro_voice_fx": false,
   "history_length": 6,
-  "model_name": "llama3:8b",
+  "model_name": "gemma3:1b",
   "voice": "danny-low.onnx",
   "volume": 90,
-  "system_prompt": "You are a loyal Imperial Stormtrooper. 
-  					Keep responses terse and authoritative.",
+  "system_prompt": "You are a loyal Imperial Stormtrooper. Keep responses short.",
   "session_timeout": 500,
   "vision_wake": false
 }
@@ -345,12 +344,12 @@ This allows users to easily update the Trooper's persona (e.g. voice, model, pro
 | `audio_output_device`      | Match string for output device name                          |
 | `mute_mic_during_playback` | Prevents mic bleed during playback (recommended `true`)      |
 | `fade_duration_ms`         | Fade duration at start/end of playback. Use `0` to disable.  |
-| `retro_voice_fx`           | If `true`, applies SoX-based filtering to make audio sound more vintage |
+| `retro_voice_fx`           | If `true`, applies SoX-based vintage audio filter            |
 | `history_length`           | Number of past exchanges to include in LLM context           |
-| `model_name`               | Name of the local model to use via Ollama (e.g. `gemma:2b`, `llama3:8b`) |
+| `model_name`               | Name of the local model to use via Ollama                    |
 | `voice`                    | Filename of the Piper voice model in the `voices/` directory |
 | `volume`                   | System volume level (0–100) applied at startup               |
-| `system_prompt`            | The LLM's default persona instruction (e.g. for tone, role, behavior) |
+| `system_prompt`            | The LLM's default persona instruction (e.g. tone, role)      |
 
 ## Vision-Based Wake (Gesture Detection)
 
