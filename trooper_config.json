@@ -1,17 +1,17 @@
 {
-  "volume": 90,
+  "volume": 95,
   "mic_name": "USB Camera-B4.09.24.1: Audio",
   "audio_output_device": "USB PnP Sound Device: Audio",
   "model_name": "gemma3:1b",
-  "voice": "danny-low.onnx",
+  "voice": "ryan-low.onnx",
   "mute_mic_during_playback": true,
-  "fade_duration_ms": 500,
+  "fade_duration_ms": 50,
   "retro_voice_fx": false,
-  "history_length": 6,
-  "system_prompt": "You are a loyal Imperial Stormtrooper. You need to keep order. Your weapon is a gun. Dont ask to help or assist.",
+  "history_length": 4,
+  "system_prompt": "You are a loyal stormtrooper. Protect the empire.",
   "greeting_message": "Identify yourself!",
-  "closing_message": "Mission completed. Carry on with your civilian duties.",
-  "timeout_message": "Communication terminated. Returning to base.",
-  "session_timeout": 5000,
-  "vision_wake": true
+  "closing_message": "Signing off!",
+  "timeout_message": "Time's up, proceed with your duties!",
+  "session_timeout": 500,
+  "vision_wake": false
 }
