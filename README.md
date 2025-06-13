@@ -48,7 +48,7 @@ I experimented with Faster-Whisper projects as an alternative to Vosk. In the en
 
 | File              | Description                                                  |
 | ----------------- | ------------------------------------------------------------ |
-| `main.py`         | **Main system entrypoint**. Manages session lifecycle (start/stop), LED state, and gesture-based or button-based activation. Handles Piper playback for greetings and timeouts. Pre-warms the LLM model. |
+| `main.py`         | **Main system entry point**. Manages session lifecycle (start/stop), LED state, and gesture-based or button-based activation. Handles Piper playback for greetings and timeouts. Pre-warms the LLM model. |
 | `client.py`       | **Audio interface and WebSocket client**. Captures audio from the mic, sends it to the server, and plays back streamed TTS audio. Handles volume control, fade-in/out, and mic muting to prevent feedback. |
 | `server.py`       | **Streaming WebSocket server**. Receives audio, performs real-time speech-to-text (Vosk), queries the LLM via Ollama, and streams TTS responses (Piper). Sends playback audio back in chunks for smooth UX. |
 | `server-batch.py` | **Non-streaming batch-mode server (alternative)**. Similar to `server.py`, but processes entire LLM responses before sending TTS back as a whole. Useful for simpler or legacy setups. |
@@ -237,21 +237,6 @@ sudo usermod -aG audio $USER
 
 Then log out or reboot.
 
-To test the system, start the `server.py` and `main.py`. If you don't wont the button control, you can start `client.py` directly instead of starting `main.py`:
-
-```
-# Start the server
-cd Trooper && python3 server.py
-
-# Start the main, which controls the initial and closing greetings, the button, and launches the client
-cd Trooper && python3 main.py
-
-# Start the client directly
-cd Trooper && python3 client.py
-```
-
-For automatic operation, the client and server can be started via `Systemd` (below)
-
 ## WebSocket Architecture
 
 Trooper uses a bidirectional WebSocket connection between the **client** (audio I/O and playback on device) and the **server** (speech recognition, LLM inference, and TTS).
@@ -421,16 +406,34 @@ The Trooper system uses the Raspberry Pi 5’s GPIO header to connect:
 
 > This debounce and long-press detection helps avoid accidental session toggles due to noise or brief contact.
 
-## Systemd Integration
+## Starting and Systemd Integration
 
-TrooperAI is designed to run automatically at boot using systemd:
-
-### Services:
+#### Services:
 
 - `trooper-server.service`: runs the LLM + TTS backend (`server.py`)
 - `trooper-main.service`: launches the LED/session manager (`main.py`)
 
-### Example: `/etc/systemd/system/trooper-server.service`
+#### Starting the System
+
+To test the system, start the `server.py` and `main.py`. If you don't wont the button control, you can start `client.py` directly instead of starting `main.py`:
+
+```
+# Start the server
+cd Trooper && python3 server.py
+
+# Start the main, which controls the initial and closing greetings, 
+# the arcade button, and launches the client
+cd Trooper && python3 main.py
+
+# Start the client directly
+cd Trooper && python3 client.py
+```
+
+#### Automatic Operation
+
+For automatic operation, the client and server can be started via `Systemd`
+
+##### Example: `/etc/systemd/system/trooper-server.service`
 
 ```
 [Unit]
@@ -447,7 +450,7 @@ User=mjw
 WantedBy=multi-user.target
 ```
 
-### Example: `/etc/systemd/system/trooper-main.service`
+##### Example: `/etc/systemd/system/trooper-main.service`
 
 ```
 [Unit]
@@ -464,7 +467,7 @@ User=mjw
 WantedBy=multi-user.target
 ```
 
-### Setup:
+#### Setup:
 
 ```
 sudo systemctl enable trooper-server.service
