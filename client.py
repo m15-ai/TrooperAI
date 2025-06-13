@@ -16,10 +16,6 @@ import threading
 from utils import led_request
 from utils import apply_fade
 
-# === Load Config ===
-config = load_config()
-fade_duration = config.get("fade_duration_ms", 0)
-
 audio_q = queue.Queue()
 playback_q = queue.Queue()
 
@@ -153,11 +149,14 @@ def mic_stream_callback(in_data, frame_count, time_info, status):
 
 
 mic_stream = None  # Global reference for mic control
+fade_duration = 0
 
 async def main():
     global mic_stream, MUTE_MIC
 
+    # === Load Config ===
     config = load_config()
+
     list_pyaudio_devices()
 
     print(f"[Config] Looking for output device match: '{config['audio_output_device']}'")
@@ -207,6 +206,11 @@ async def main():
         ping_interval=30
     ) as ws:    
         print("[Client] Connected to WebSocket server.")
+
+        await ws.send(json.dumps({
+            "type": "config_sync",
+            "config": config
+        }))
 
         loop = asyncio.get_running_loop()
         global outgoing_ws

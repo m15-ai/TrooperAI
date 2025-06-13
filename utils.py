@@ -5,46 +5,40 @@ import errno
 import numpy as np
 
 def load_config():
+    CONFIG_PATH = "/home/mjw/Trooper/.trooper_config.json"
     DEFAULTS = {
-        "volume": 90,
-        "session_timeout": 300,
-        "greeting_message": "Identify yourdelf.",
-        "mic_name": "USB Audio",
-        "audio_output_device": "USB Audio",
-        "closing_message": "Mission abandoned. Shutting down.",
+        "volume": 95,
+        "mic_name": "USB Camera-B4.09.24.1: Audio",
+        "audio_output_device": "USB PnP Sound Device: Audio",
+        "model_name": "gemma3:1b",
         "voice": "danny-low.onnx",
         "mute_mic_during_playback": True,
-        "model_name": "gemma3:1b",
-        "system_prompt": "You are a loyal Imperial Stormtrooper. Be blunt. Short answers only.",
+        "fade_duration_ms": 50,
+        "retro_voice_fx": False,
         "history_length": 6,
-        "max_response_characters": 350,
-        "enable_audio_processing": False,
-        "vision_wake": True
+        "system_prompt": "You are a loyal Imperial Stormtrooper. You need to keep order. Your weapon is a gun. Don’t ask to help or assist.",
+        "greeting_message": "Identify yourself!",
+        "closing_message": "Mission completed. Carry on with your civilian duties.",
+        "timeout_message": "Communication terminated. Returning to base.",
+        "session_timeout": 500,
+        "vision_wake": False
     }
 
-    USB_PATH = "/media/mjw/TROOPER/trooper_config.json"
-    LOCAL_PATH = os.path.expanduser(".trooper_config.json")
-
     try:
-        if os.path.exists(USB_PATH):
-            print("[Config] Loading from USB...")
-            with open(USB_PATH, "r") as f:
-                cfg = json.load(f)
-            # Save to local config path
-            with open(LOCAL_PATH, "w") as out:
-                json.dump(cfg, out, indent=2)
-            return {**DEFAULTS, **cfg}
-
-        # Otherwise, load from local file
-        if os.path.exists(LOCAL_PATH):
-            with open(LOCAL_PATH, "r") as f:
-                cfg = json.load(f)
-                print("[Config] Loaded from local file.")
-            return {**DEFAULTS, **cfg}
-
+        if os.path.exists(CONFIG_PATH):
+            try:
+                with open(CONFIG_PATH, "r") as f:
+                    cfg = json.load(f)
+                    print("[Config] Loaded from file:", CONFIG_PATH)
+                    return {**DEFAULTS, **cfg}
+            except Exception as e:
+                print("[Config] Failed to load config, using defaults:", e)
+        else:
+            print("[Config] Config file not found, using defaults.")
     except Exception as e:
         print(f"[Config] Error loading config: {e}")
 
+    print("[Config] Using defaults only.")
     return DEFAULTS
     
 def list_pyaudio_devices():

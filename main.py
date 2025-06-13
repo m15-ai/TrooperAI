@@ -15,6 +15,7 @@ import pyaudio
 from utils import load_config, find_device
 import asyncio
 import aiohttp
+import glob, shutil
 
 Device.pin_factory = LGPIOFactory()
 
@@ -34,6 +35,19 @@ session_active = [False]  # mutable shared state
 
 timeout_thread = None
 
+def sync_usb_config():
+    usb_matches = glob.glob("/media/mjw/TROOPER*/trooper_config.json")
+    if usb_matches:
+        try:
+            shutil.copy(usb_matches[0], "/home/mjw/Trooper/.trooper_config.json")
+            print("[Config] USB config copied successfully.")
+        except Exception as e:
+            print("[Config] Failed to copy USB config:", e)
+
+
+sync_usb_config()
+config = load_config()
+
 def led_pipe_listener():
     while True:
         with open(FIFO_PATH, "r") as fifo:
@@ -46,7 +60,6 @@ def led_pipe_listener():
 threading.Thread(target=led_pipe_listener, daemon=True).start()
 
 def play_message(text):
-    config = load_config()
     voice_model = config.get("voice", "danny-low.onnx")
     device_name = config.get("audio_output_device", "")
     AUDIO_OUTPUT_DEVICE_INDEX = find_device(device_name, is_input=False)
@@ -129,7 +142,7 @@ def led_mode(mode):
 
 def session_loop():
     global client_proc
-    config = load_config()
+    global config
     greeting_msg = config.get("greeting_message", "").strip()
     timeout_msg = config.get("timeout_message", "").strip()
     timeout_sec = config.get("session_timeout", 0)
@@ -149,6 +162,7 @@ def session_loop():
     print("[Debug] Greeting complete, launching client.")
 
     log_file = open("./client.log", "w")
+
     client_proc = subprocess.Popen(
         ["python3", "client.py"],
         stdout=log_file,
@@ -187,7 +201,7 @@ def end_session(msg):
         time.sleep(1)
 
 def on_button_press():
-    config = load_config()
+    global config
     closing_msg = config.get("closing_message", "").strip()
     if not session_active[0]:
         session_active[0] = True
@@ -283,8 +297,6 @@ button.when_held = on_button_press
 button.when_released = on_tap
 
 print("[System] Awaiting button press...")
-
-config = load_config()
 
 if config.get("vision_wake", False):
     threading.Thread(target=vision_watch_loop, daemon=True).start()
