@@ -8,7 +8,7 @@ The final device is housed in a Game 5 Pi retro arcade case. The AdaFruit arcade
 
 ## Conclusion
 
-The project was a success. Both the streaming and batch architectures ( `server.py`and `server-batch.py` files) were capable of providing low enough latency to make possible a reasonable conversation with TrooperAI. `Gemma3:1b` and `Qwen2.5:0.5b` models provided acceptable performance. The Gemma2 model was able to provide a more direct, authoritarian persona, while Qwen2.5 was faster, but generally provided a more friendly interaction. The programmable `System Message` is key in tuning your desired personality. I decided on Vosk for STT, although i did extensive testing with faster-whisper. Piper gave excellent performance for TTS.
+The project was a success. Both the streaming and batch architectures ( `server.py`and `server-batch.py` files) were capable of providing low enough latency to make possible a reasonable conversation with TrooperAI. `Gemma3:1b` and `Qwen2.5:0.5b` models provided acceptable performance. The Gemma3 model was able to provide a more direct, authoritarian persona, while Qwen2.5 was faster, but generally provided a more friendly interaction. The programmable `System Message` is key in tuning your desired personality. I decided on Vosk for STT, although I did extensive testing with faster-whisper. Piper gave excellent performance for TTS.
 
 ## Features
 
@@ -23,7 +23,7 @@ The project was a success. Both the streaming and batch architectures ( `server.
 - Configurable device names (mic and speaker)
 - Arcade style lighted button for visual feedback and control. The large LED provides feedback (listening / speaking / thinking) and a push button to start or stop sessions as an alternative to gesture detection mode.
 - Detection and elimination of false low-energy utterances
-- System can be triggered via gesture detection (camera + MediaPipe Hands model)
+- System can be triggered via push button or gesture detection (camera + MediaPipe Hands model)
 
 ## Performance
 
@@ -208,7 +208,7 @@ cargo install piper
 
 ##### Ollama (LLM Backend)
 
-Ollama runs your local language models like `gemma` or `llama3`.
+Ollama runs your local language models like `gemma` or `qwen2.5`.
 
 ```
 curl -fsSL https://ollama.com/install.sh | sh
@@ -218,7 +218,7 @@ Start and load your preferred model:
 
 ```
 ollama serve &
-ollama pull gemma:2b
+ollama pull gemma3:1b
 ```
 
 ##### Audio System
@@ -303,7 +303,7 @@ client.py ──► [ Audio Output ]
 
 ## Configuration
 
-The system is configured via a JSON file named `.trooper_config.json`, located in the home directory. This file controls audio devices, behavior, personality, and more.
+The system is configured via a JSON file named `.trooper_config.json`, located in the project directory. This file controls audio devices, behavior, personality, and more.
 
 #### USB-Based Configuration Override
 
@@ -317,20 +317,23 @@ To support headless operation, configuration updates can be applied via a USB fl
 
 This allows users to easily update the Trooper's persona (e.g. voice, model, prompt) without SSH access.
 
-#### Sample Configuration
+#### Sample Configuration (.trooper_config.json)
 
 ```
 {
+  "volume": 95,
   "mic_name": "USB Camera-B4.09.24.1: Audio",
   "audio_output_device": "USB PnP Sound Device: Audio",
-  "mute_mic_during_playback": true,
-  "fade_duration_ms": 10,
-  "retro_voice_fx": false,
-  "history_length": 6,
   "model_name": "gemma3:1b",
   "voice": "danny-low.onnx",
-  "volume": 90,
-  "system_prompt": "You are a loyal Imperial Stormtrooper. Keep responses short.",
+  "mute_mic_during_playback": true,
+  "fade_duration_ms": 100,
+  "retro_voice_fx": false,
+  "history_length": 6,
+  "system_prompt": "You are a loyal Imperial Stormtrooper.",
+  "greeting_message": "Civilian detected!",
+  "closing_message": "Mission completed. Carry on with your civilian duties.",
+  "timeout_message": "Communication terminated. Returning to base.",
   "session_timeout": 500,
   "vision_wake": false
 }
@@ -340,16 +343,21 @@ This allows users to easily update the Trooper's persona (e.g. voice, model, pro
 
 | Key                        | Description                                                  |
 | -------------------------- | ------------------------------------------------------------ |
-| `mic_name`                 | Match string for input device name                           |
-| `audio_output_device`      | Match string for output device name                          |
-| `mute_mic_during_playback` | Prevents mic bleed during playback (recommended `true`)      |
-| `fade_duration_ms`         | Fade duration at start/end of playback. Use `0` to disable.  |
-| `retro_voice_fx`           | If `true`, applies SoX-based vintage audio filter            |
-| `history_length`           | Number of past exchanges to include in LLM context           |
-| `model_name`               | Name of the local model to use via Ollama                    |
-| `voice`                    | Filename of the Piper voice model in the `voices/` directory |
-| `volume`                   | System volume level (0–100) applied at startup               |
-| `system_prompt`            | The LLM's default persona instruction (e.g. tone, role)      |
+| `volume`                   | Initial system audio level (0–100) applied at boot.          |
+| `mic_name`                 | Partial or exact match string for the microphone input device. |
+| `audio_output_device`      | Partial or exact match string for audio output device.       |
+| `model_name`               | Local LLM to use via Ollama (e.g., `gemma3:1b`, `qwen2.5:0.5b`). |
+| `voice`                    | Piper voice model filename (must exist in `voices/` directory). |
+| `mute_mic_during_playback` | Prevents audio feedback by muting mic during TTS playback (recommended: `true`). |
+| `fade_duration_ms`         | Fade-in/out duration in milliseconds for smoother playback transitions. Set to `0` to disable. |
+| `retro_voice_fx`           | Enables SoX filters for vintage radio effect (high-pass, compression, etc.). |
+| `history_length`           | Number of previous user/system messages retained for context-aware LLM replies. |
+| `system_prompt`            | Role-based instruction injected into LLM at start of each session (sets persona and tone). |
+| `greeting_message`         | Spoken at session start, using the configured voice.         |
+| `closing_message`          | Spoken at session end.                                       |
+| `timeout_message`          | Spoken if session times out with no user input.              |
+| `session_timeout`          | Session timeout in seconds. If no activity, session will auto-close. |
+| `vision_wake`              | Reserved for future use (e.g., camera-based wake triggers). Set to `false`. |
 
 ## Vision-Based Wake (Gesture Detection)
 
