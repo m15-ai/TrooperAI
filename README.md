@@ -8,7 +8,7 @@ The final device is housed in a Game 5 Pi retro arcade case. The AdaFruit arcade
 
 ## Conclusion
 
-The project was a success. Both the streaming and batch architectures ( `server.py`and `server-batch.py` files) were capable of providing low enough latency to make possible a reasonable conversation with TrooperAI. `Gemma3:1b` and `Qwen2.5:0.5b` models provided acceptable performance. The Gemma3 model was able to provide a more direct, authoritarian persona, while Qwen2.5 was faster, but generally provided a more friendly interaction. The programmable `System Message` is key in tuning your desired personality. I decided on Vosk for STT, although I did extensive testing with faster-whisper. Piper gave excellent performance for TTS.
+The project was a success. The streaming architecture was capable of providing low enough latency to make possible a reasonable conversation with TrooperAI. The `Gemma3:1b` and `Qwen2.5:0.5b` models provided acceptable performance. The Gemma3 model was able to provide a more direct, authoritarian persona, while Qwen2.5 was faster, but generally provided a more friendly interaction. The programmable `System Message` is key in tuning your desired personality. I decided on Vosk for STT, although I did extensive testing with faster-whisper. Piper gave excellent performance for TTS, and many voices are available.
 
 ## Features
 
@@ -46,13 +46,12 @@ I experimented with Faster-Whisper projects as an alternative to Vosk. In the en
 
 ## Python File Overview
 
-| File              | Description                                                  |
-| ----------------- | ------------------------------------------------------------ |
-| `main.py`         | **Main system entry point**. Manages session lifecycle (start/stop), LED state, and gesture-based or button-based activation. Handles Piper playback for greetings and timeouts. Pre-warms the LLM model. |
-| `client.py`       | **Audio interface and WebSocket client**. Captures audio from the mic, sends it to the server, and plays back streamed TTS audio. Handles volume control, fade-in/out, and mic muting to prevent feedback. |
-| `server.py`       | **Streaming WebSocket server**. Receives audio, performs real-time speech-to-text (Vosk), queries the LLM via Ollama, and streams TTS responses (Piper). Sends playback audio back in chunks for smooth UX. |
-| `server-batch.py` | **Non-streaming batch-mode server (alternative)**. Similar to `server.py`, but processes entire LLM responses before sending TTS back as a whole. Useful for simpler or legacy setups. |
-| `utils.py`        | **Shared utilities**. Includes configuration loading (USB override), audio device detection, LED control via FIFO pipe, and fade-in/out DSP for playback audio. |
+| File        | Description                                                  |
+| ----------- | ------------------------------------------------------------ |
+| `main.py`   | **Main system entry point**. Manages session lifecycle (start/stop), LED state, and gesture-based or button-based activation. Handles Piper playback for greetings and timeouts. Pre-warms the LLM model. |
+| `client.py` | **Audio interface and WebSocket client**. Captures audio from the mic, sends it to the server, and plays back streamed TTS audio. Handles volume control, fade-in/out, and mic muting to prevent feedback. |
+| `server.py` | **Streaming WebSocket server**. Receives audio, performs real-time speech-to-text (Vosk), queries the LLM via Ollama, and streams TTS responses (Piper). Sends playback audio back in chunks for smooth UX. |
+| `utils.py`  | **Shared utilities**. Includes configuration loading (USB override), audio device detection, LED control via FIFO pipe, and fade-in/out DSP for playback audio. |
 
 ## Core Architecture
 
@@ -135,8 +134,7 @@ The Playstation Eye USB camera / microphone is used for camera and audio input. 
 ```
 Trooper/
 ├── client.py             # Audio I/O, mic, speaker, LED
-├── server.py             # Streaming server: LLM, STT, TTS processing
-├── server-batch.py       # Batch mode server
+├── server.py             # Streaming server: LLM, STT, TTS
 ├── main.py               # Launches client on gesture/button
 ├── utils.py              # Shared helpers (e.g. led_request)
 ├── voices/               # Piper voice models
