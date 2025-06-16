@@ -89,7 +89,7 @@ To keep the system responsive, you need to choose a lightweight model, otherwise
 Choose your model in the JSON configuration file:
 
 ```
-  "model_name": "gemma3:1b",
+"model_name": "gemma3:1b",
 ```
 
 The system also implements configurable System Prompt to give the Trooper his personality. The default System Prompt for Trooper is also stored in the JSON configuration file:
@@ -140,6 +140,7 @@ Trooper/
 ├── main.py               # Launches client on gesture/button
 ├── utils.py              # Shared helpers (e.g. led_request)
 ├── voices/               # Piper voice models
+├── vosk-model/           # Vosk STT models
 ├── .trooper_config.json  # JSON config file
 ├── requirements.txt      # Dependencies file
 ├── client.log            # Log output for client debug
