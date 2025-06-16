@@ -41,6 +41,15 @@ def load_config():
     print("[Config] Using defaults only.")
     return DEFAULTS
     
+def get_voice_sample_rate(voice_name):
+    json_path = os.path.join("voices", voice_name + ".json")
+    try:
+        with open(json_path, "r") as f:
+            meta = json.load(f)
+        return meta.get("audio", {}).get("sample_rate", 16000)
+    except Exception:
+        return 16000  # default fallback
+
 def list_pyaudio_devices():
     print("\n[PyAudio Devices]")
     pa = pyaudio.PyAudio()

@@ -4,17 +4,14 @@ import pyaudio
 import numpy as np
 import queue
 import json
-import os
 import websockets
 import subprocess
 import soxr
+import os
 import time
-import io
-import wave
 from utils import load_config, find_device, list_pyaudio_devices
 import threading
-from utils import led_request
-from utils import apply_fade
+from utils import apply_fade, led_request
 
 audio_q = queue.Queue()
 playback_q = queue.Queue()
@@ -35,6 +32,7 @@ async def send_audio(ws,config):
 def audio_playback_worker(output_device_index, loop):
     global mic_stream
     global mic_was_muted
+    global MUTE_MIC
 
     p = pyaudio.PyAudio()
     stream = p.open(
@@ -58,11 +56,9 @@ def audio_playback_worker(output_device_index, loop):
             # Reactivate mic here
             if MUTE_MIC and mic_stream and not mic_stream.is_active():
                 print("[Mic] Reactivating mic")
-                time.sleep(0.25)  # optional: wait 100ms for output device to drain
+                time.sleep(0.1)  # optional: wait 100ms for output device to drain
                 mic_stream.start_stream()
                 mic_was_muted = False
-            else:
-                print("[Mic] Could not reactivate — mic_stream is None or already active")
 
             # Still notify server or UI
             asyncio.run_coroutine_threadsafe(
