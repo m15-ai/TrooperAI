@@ -12,7 +12,7 @@ import mediapipe as mp
 import wave
 import io
 import pyaudio
-from utils import load_config, find_device
+from utils import load_config, find_device, get_voice_sample_rate
 import asyncio
 import aiohttp
 import glob, shutil
@@ -78,10 +78,12 @@ def play_message(text):
     if err:
         print("[Piper Error]", err.decode())
 
+    sample_rate = get_voice_sample_rate(voice_model)    
+
     # Choose SoX pipeline
     if retro_fx:
         sox_cmd = [
-            'sox', '-t', 'raw', '-r', '16000', '-c', '1', '-b', '16',
+            'sox', '-t', 'raw', '-r', str(sample_rate), '-c', '1', '-b', '16',
             '-e', 'signed-integer', '-', '-r', '48000', '-c', '2', '-t', 'wav', '-',
             'highpass', '300', 'lowpass', '3400',
             'compand', '0.3,1', '6:-70,-60,-20', '-5', '-90', '0.2',
@@ -90,7 +92,7 @@ def play_message(text):
         ]
     else:
         sox_cmd = [
-            'sox', '-t', 'raw', '-r', '16000', '-c', '1', '-b', '16',
+            'sox', '-t', 'raw', '-r', str(sample_rate), '-c', '1', '-b', '16',
             '-e', 'signed-integer', '-', '-r', '48000', '-c', '2', '-t', 'wav', '-'
         ]    
 
