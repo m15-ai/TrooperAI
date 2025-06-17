@@ -111,7 +111,8 @@ async def stream_tts(text, piper_proc, retro_voice_fx, voice):
     sox_proc = await asyncio.create_subprocess_exec(
         *sox_cmd,
         stdin=asyncio.subprocess.PIPE,
-        stdout=asyncio.subprocess.PIPE
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.DEVNULL
     )
     sox_stdout, _ = await sox_proc.communicate(input=raw_pcm)
 
@@ -181,7 +182,8 @@ async def process_connection(websocket):
                 recognizer = KaldiRecognizer(vosk_model, RATE)
                 continue
 
-            print("[User]:", user_text)
+            # color code the output
+            print(f"\033[38;5;35m[User]: {user_text}\033[0m")
             messages = [{"role": "system", "content": session_config.get("system_prompt", "")}]
             messages.append({"role": "user", "content": user_text})
             led_request("blink")
@@ -195,7 +197,8 @@ async def process_connection(websocket):
                 if token.endswith((".", "!", "?", "\n")):
                     segment = clean_response(response_text).strip()
                     if segment and not re.fullmatch(r"[.?!\-–—…]+", segment):
-                        print(f"[Trooper]: {segment}")
+                        # color code the output
+                        print(f"\033[38;5;75m[Trooper]: {segment}\033[0m")
                         full_response += segment + " "
                         led_request("speak")
                         async for chunk in stream_tts(segment, piper_proc, session_config.get("retro_voice_fx", False), session_config["voice"]):    
